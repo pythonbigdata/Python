@@ -1,0 +1,8 @@
+import time 
+Time=time.time()  '''Time为1970.1.1距离现在时间的秒数'''
+now=time.localtime(Time)   '''调用time模块的函数，获取今天的日期'''
+print(Time)       
+print("1970年1月1日距离现在",Time,"秒")  
+print("现在的时间为：",now) 
+print(time.asctime(now))   '''调用time模块的函数，获取今天的日期'''
+print(time.strftime("%y/%m/%d %H:%M", now) 
