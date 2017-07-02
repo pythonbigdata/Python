@@ -1,0 +1,16 @@
+# -*- coding:utf-8 -*-
+import math
+#定义费马定理的检测函数
+def check_fermat(a,b,c,n):
+    if(pow(a,n)+pow(b,n)==pow(c,n)) and n>2:
+        print("天呐，费马弄错了")
+    else:
+        print("不，那样不行")
+#定义输入函数，提示用户输入a,b,c,n的值
+def inputZimu():
+    a=int(input("输入一个a值："))
+    b=int(input("输入一个b值："))
+    c=int(input("输入一个c值："))
+    n=int(input("输入一个n值："))
+    check_fermat(a,b,c,n)
+inputZimu()
