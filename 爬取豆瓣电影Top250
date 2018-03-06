@@ -1,0 +1,73 @@
+#爬取豆瓣电影Top250
+
+
+import time
+import urllib
+import urllib.request
+import re
+import os
+
+path = r'C:\Users\wangzixuan\Desktop\豆瓣Top250-Film'
+
+def getHTML(page):
+    url = r'https://movie.douban.com/top250?start=%d&filter=' %page
+    headers = {
+        'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
+        'Accept': 'text / html, application / xhtml + xml, application / xml;q = 0.9, image / webp, image / apng, * / *;q = 0.8',
+        'Accept - Encoding': 'gzip, deflate, br',
+        'Accept - Language': 'zh - CN, zh;q = 0.9',
+        'Connection': 'keep - alive'
+    }
+    requests = urllib.request.Request(url=url, headers=headers)
+    response = urllib.request.urlopen(requests)
+    time.sleep(2)
+    html = response.read().decode('utf-8')
+    return html
+
+def mkpath(path):
+    if not os.path.isdir(path):
+        os.mkdir(path)
+
+def savefile(movieList, Imgs):
+    for (movie, Img) in zip(movieList, Imgs):
+        try:
+            Path = r'C:\Users\wangzixuan\Desktop\豆瓣Top250-Film\%s.%s' %(movie[0], movie[1])
+            path = r'C:\Users\wangzixuan\Desktop\豆瓣Top250-Film\%s.%s\%s.%s.txt' %(movie[0], movie[1], movie[0], movie[1])
+            mkpath(Path)
+            file = open(path, 'a', encoding='utf-8')
+            urllib.request.urlretrieve(Img, r'C:\Users\wangzixuan\Desktop\豆瓣Top250-Film\%s.%s\%s.jpg' %(movie[0], movie[1], movie[1]))
+            Str0= "排名：" +movie[0] +'\r\n'
+            Str1 = "电影名称：" +movie[1] +'\r\n'
+            Str2 = "导演：" +movie[2] +'\r\n'
+            Str3 = "演员" + movie[3] +'\r\n'
+            Str4 = "评分：" +movie[4] +'\r\n'
+            Str5 = "描述：" +movie[5] +'\r\n\n'
+            file.write(Str0+Str1+Str2+Str3+Str4+Str5)
+            file.close()
+        except OSError as e:
+            print(e)
+
+
+def getImformation():
+    movie = []
+    for page in range(0, 250, 25):
+        print("正在爬取第"+ str((page/25)+1)+ "页")
+        html = getHTML(page)
+        pattern = re.compile(r'<em class="">(.*?)</em>.*?<span class="title">(.*?)</span>.*?<p class="">.*?导演:(.*?)&nbsp;&nbsp;&nbsp;.*?主演:(.*?)...<br>.*?</p>.*?<span class="rating_num" property="v:average">(.*?)</span>.*?<span class="inq">(.*?)</span>', re.S)
+        movies = pattern.findall(html)
+        for Eachmovie in movies:
+            movie.append([Eachmovie[0], Eachmovie[1].lstrip(), Eachmovie[2], Eachmovie[3], Eachmovie[4], Eachmovie[5]])
+    return movie
+
+def getImg():
+    Img = []
+    for page in range(0, 250, 25):
+        html = getHTML(page)
+        pattern = re.compile(r'<img width="100".*?src="(.*?)" class="">')
+        Imgs =pattern.findall(html)
+        for EachImg in Imgs:
+            Img.append(EachImg)
+    return Img
+
+mkpath(path)
+savefile(getImformation(), getImg())
